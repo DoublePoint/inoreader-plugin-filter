@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" style="width: 700px;height:500px;padding: 10px;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="./css/element-ui-2.15.6.css">
+  <script src="./js/vue-2.0.js"></script>
+  <script src="./js/element-ui-2.15.6.js"></script>
+  <script src="./js/xpath.js"></script>
+  <!-- <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>  -->
+</head>
+
+<body style="height: 100%;width: 100%;">
+  <div id="app" style="height: 100%;width: 100%;">
+    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+      <el-tab-pane name="first">
+        <span slot="label"><i class="el-icon-sugar"></i> 过滤规则</span>
+        <el-row style="margin-bottom: 5px;">
+          <el-button icon="el-icon-s-open" type="success" style="font-size: 12px;float: left;" title="Start Filter" size="small" round @click="handleFilter">Start Filter</el-button>
+          <el-button icon="el-icon-plus" type="primary" style="font-size: 12px;float: right;" title="Add Rule" size="small" round @click="addNewRule">Add Rule</el-button>
+        </el-row>
+        <el-table :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+          style="width: 100%">
+          <el-table-column label="Filter Type" prop="name">
+          </el-table-column>
+          <el-table-column label="Filter Value" prop="name">
+          </el-table-column>
+          <el-table-column label="是否可用" prop="enable">
+            <template slot-scope="scope">
+              <el-switch v-model="scope.row.enable" active-color="#13ce66" inactive-color="#ff4949" @change="tableSwitchChange"> </el-switch>
+            </template>
+          </el-table-column>
+          <el-table-column align="right">
+            <template slot="header" slot-scope="scope">
+              <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
+            </template>
+            <template slot-scope="scope">
+              <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+              <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+      </el-tab-pane>
+    </el-tabs>
+
+    <el-dialog title="维护" :visible.sync="dialogVisible" width="100%">
+      <el-form ref="form" :model="form" label-width="100px" size="mini">
+        <el-form-item label="Title">
+          <el-input class="input-new-tag" placeholder="Please the rule title." v-model="form.name" size="small"
+            >
+          </el-input>
+        </el-form-item>
+        <el-form-item :label="index==0?'过滤类型':''" v-for="filterItem,index in form.filterList">
+          <el-select v-model="filterItem.filterType" placeholder="请选择过滤类型" style="width:100px;">
+            <el-option v-for='item in filterTypeList' :label="item.label" :value="item.value"></el-option>
+          </el-select>
+          <el-select v-model="filterItem.filterRelation" placeholder="请选择关系" style="width:100px;">
+            <el-option v-for='item in filterRelationList' :label="item.label" :value="item.value"></el-option>
+          </el-select>
+          <el-input v-model="filterItem.filterValue" placeholder="请输入内容" style="width:200px;"></el-input>
+          <el-button v-if="(index==0)" class="button-new-tag" size="small" @click="newFilter">+ New Filter</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="save">Save</el-button>
+          <el-button @click="handleDialogCancel"> 取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </div>
+</body>
+<script src="./js/common.js"></script>
+<script src="./js/main.js"></script>
+
+</html>
