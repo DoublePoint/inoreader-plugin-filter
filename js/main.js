@@ -4,6 +4,7 @@ var vm = new Vue({
         form: {
             name: '',
             filterList: [{ filterType: "",filterRelation:"", filterValue: ""}],
+            remark:''
         },
         filterTypeList: [
             { label: FILTER_TYPE_TITLE_LABEL, value:  FILTER_TYPE_TITLE_VALUE},
@@ -17,10 +18,23 @@ var vm = new Vue({
         checkList: [],
         activeName: "first",
         search: "",
-        dialogVisible: false
+        dialogVisible: false,
+        closeTag:localStorage.getItem("closeTag")
     },
     mounted() {
 
+    },
+    watch:{
+        form:{
+            handler(newVal,oldVal){
+                // if(newVal.name!=""){
+
+                // }
+                // if(newVal.filterList)
+                // console.log("form发生了变更");
+            },
+            deep:true
+        }
     },
     computed: {
         tableData() {
@@ -33,6 +47,20 @@ var vm = new Vue({
         }
     },
     methods: {
+        getFilterRemark(form){
+            // if(form.name!=""){
+
+            // }
+            // if(form.filterList.length>0){
+            //     for(var i=0;i<filterList.length;i++){
+            //         var ite = filterList[i];
+            //         if(ite.filterValue!=""){
+
+            //         }
+            //     }
+            // }
+            // console.log("form发生了变更");
+        },
         save() {
             let ruleMap = JSONformat._jsonToMap(localStorage.getItem(storageKey));
             if (ruleMap == null) {
@@ -51,9 +79,14 @@ var vm = new Vue({
 
             this.ruleMap = ruleMap;
             this.$message({
-             message: '保存成功',
+             message: 'Save Success',
              type: 'success'
             });
+            this.dialogVisible = false;
+        },
+        saveAndAdd(){
+            this.save()
+            this.addNewRule();
         },
         addNewRule() {
             this.dialogVisible = true;
@@ -63,6 +96,10 @@ var vm = new Vue({
             this.form.filterList.push({
                 filterType: FILTER_TYPE_TITLE_VALUE, filterValue: "",filterRelation:FILTER_RELATION_NOT_LIKE_VALUE
             })
+        },
+        handleCloseTag(){
+            this.closeTag = "1";
+            localStorage.setItem("closeTag", '1');
         },
         // tagClick(key) {
         //     key = key + '';
@@ -90,9 +127,9 @@ var vm = new Vue({
             this.initForm(dat);
         },
         handleDelete(index, row) {
-            this.$confirm('此操作将永久删除该条目, 是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
+            this.$confirm('Do you want to continue?', 'Tips', {
+                confirmButtonText: 'Ok',
+                cancelButtonText: 'Cancel',
                 type: 'warning'
               }).then(() => {
                 key = row.name;
@@ -100,7 +137,7 @@ var vm = new Vue({
                 this.saveTmpToStorage();
                 this.$message({
                   type: 'success',
-                  message: '删除成功!'
+                  message: 'Delete Success'
                 });
               }).catch(() => {
               });
@@ -127,6 +164,7 @@ var vm = new Vue({
                 name: '',
                 enable: true,
                 filterList: [{ filterType: FILTER_TYPE_TITLE_VALUE, filterValue: "",filterRelation:FILTER_RELATION_NOT_LIKE_VALUE,color: randomHexColor() }],
+                remark:''
             }
             this.dialogVisible = true;
         },

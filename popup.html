@@ -13,16 +13,23 @@
   <!-- <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>  -->
+  <style>
+    [v-cloak]{
+      display: none;
+    }
+  </style>
 </head>
 
 <body style="height: 100%;width: 100%;">
   <div id="app" style="height: 100%;width: 100%;">
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
       <el-tab-pane name="first">
-        <span slot="label"><i class="el-icon-sugar"></i> 过滤规则</span>
+        <span slot="label"><i class="el-icon-sugar"></i>Filter</span>
+        <el-tag key="a" type="warning" closable style="margin-bottom: 5px;" @close="handleCloseTag" v-if="closeTag!='1'"
+          >Dear you,We will remove items that do not meet your expectations according to the 'Rule'</el-tag>
         <el-row style="margin-bottom: 5px;">
-          <el-button icon="el-icon-s-open" type="success" style="font-size: 12px;float: left;" title="Start Filter" size="small" round @click="handleFilter">Start Filter</el-button>
-          <el-button icon="el-icon-plus" type="primary" style="font-size: 12px;float: right;" title="Add Rule" size="small" round @click="addNewRule">Add Rule</el-button>
+          <el-button icon="el-icon-s-open" type="success" style="font-size: 12px;float: left;" title="Start Filter" size="small" round @click="handleFilter" v-cloak>Start</el-button>
+          <el-button icon="el-icon-plus" type="primary" style="font-size: 12px;float: right;" title="Add Rule" size="small" round @click="addNewRule" v-cloak>Add Rule</el-button>
         </el-row>
         <el-table :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
           style="width: 100%">
@@ -30,14 +37,14 @@
           </el-table-column>
           <el-table-column label="Filter Value" prop="name">
           </el-table-column>
-          <el-table-column label="是否可用" prop="enable">
+          <el-table-column label="Enable" prop="enable">
             <template slot-scope="scope">
               <el-switch v-model="scope.row.enable" active-color="#13ce66" inactive-color="#ff4949" @change="tableSwitchChange"> </el-switch>
             </template>
           </el-table-column>
           <el-table-column align="right">
             <template slot="header" slot-scope="scope">
-              <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
+              <el-input v-model="search" size="mini" placeholder="Key words" />
             </template>
             <template slot-scope="scope">
               <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
@@ -49,26 +56,29 @@
       </el-tab-pane>
     </el-tabs>
 
-    <el-dialog title="维护" :visible.sync="dialogVisible" width="100%">
+    <el-dialog title="Modify" :visible.sync="dialogVisible" width="100%">
       <el-form ref="form" :model="form" label-width="100px" size="mini">
         <el-form-item label="Title">
-          <el-input class="input-new-tag" placeholder="Please the rule title." v-model="form.name" size="small"
-            >
+          <el-input class="input-new-tag" placeholder="Please the rule title." v-model="form.name" size="small">
           </el-input>
         </el-form-item>
-        <el-form-item :label="index==0?'过滤类型':''" v-for="filterItem,index in form.filterList">
+        <el-form-item :label="index==0?'Filter Type':''" v-for="filterItem,index in form.filterList">
           <el-select v-model="filterItem.filterType" placeholder="请选择过滤类型" style="width:100px;">
             <el-option v-for='item in filterTypeList' :label="item.label" :value="item.value"></el-option>
           </el-select>
           <el-select v-model="filterItem.filterRelation" placeholder="请选择关系" style="width:100px;">
             <el-option v-for='item in filterRelationList' :label="item.label" :value="item.value"></el-option>
           </el-select>
-          <el-input v-model="filterItem.filterValue" placeholder="请输入内容" style="width:200px;"></el-input>
-          <el-button v-if="(index==0)" class="button-new-tag" size="small" @click="newFilter">+ New Filter</el-button>
+          <el-input v-model="filterItem.filterValue" placeholder="Plese input the content" style="width:200px;"></el-input>
+          <el-button v-if="(index==0)" class="button-new-tag" size="small" @click="newFilter" v-cloak>+ New Filter</el-button>
         </el-form-item>
+        <!-- <el-form-item>
+          
+        </el-form-item> -->
         <el-form-item>
-          <el-button type="primary" @click="save">Save</el-button>
-          <el-button @click="handleDialogCancel"> 取消</el-button>
+          <el-button type="primary" @click="save" v-cloak>Save</el-button>
+          <el-button type="primary" @click="saveAndAdd" v-cloak>Save & Add</el-button>
+          <el-button @click="handleDialogCancel" v-cloak> Cancel</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>

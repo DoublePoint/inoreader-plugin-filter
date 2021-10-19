@@ -179,37 +179,58 @@ function isReadThisItem(title,content){
 	var UNREAD = false;
 	var isRead = false;
 	
-		ruleMap.forEach((value, key, map) => {
-			//value和key就是map的key，value，map是map本身
-			let rule = ruleMap.get(key);
-			var filterList = rule.filterList;
-			if(rule.enable){
-				try{
-					for(var i=0;i<filterList.length;i++){
-						if(!isRead){
-							var filter = filterList[i];
-							if(filter.filterType===FILTER_TYPE_TITLE_VALUE){
-								let filterContent = filter.filterValue;
-								if(filterContent!=null&&filterContent!=""){
-									if(filter.filterRelation==FILTER_RELATION_NOT_LIKE_VALUE){
-										if(title.toLowerCase().indexOf(filterContent)!=-1){
-											isRead = READ;
-										}
+	ruleMap.forEach((value, key, map) => {
+		//value和key就是map的key，value，map是map本身
+		let rule = ruleMap.get(key);
+		var filterList = rule.filterList;
+		if(rule.enable){
+			try{
+				for(var i=0;i<filterList.length;i++){
+					if(!isRead){
+						var filter = filterList[i];
+						if(filter.filterType===FILTER_TYPE_TITLE_VALUE){
+							let filterContent = filter.filterValue;
+							if(filterContent!=null&&filterContent!=""){
+								//选择的是不包含，则不包含的不读取，包含的读取
+								if(filter.filterRelation==FILTER_RELATION_NOT_LIKE_VALUE){
+									//说明包含
+									if(title.toLowerCase().indexOf(filterContent)!=-1){
+										isRead = READ;
 									}
-									else{
-										if(title.toLowerCase().indexOf(filterContent)==-1){
-											isRead = READ;
-										}
+								}
+								//选择的是包含，则不包含的读取，包含的不读取
+								else{
+									if(title.toLowerCase().indexOf(filterContent)==-1){
+										isRead = READ;
 									}
 								}
 							}
 						}
-				}
-				}
-				catch(e){
-					console.error(e)
-				}
+						else if(filter.filterType===FILTER_TYPE_CONTENT_VALUE){
+							let filterContent = filter.filterValue;
+							if(filterContent!=null&&filterContent!=""){
+								//选择的是不包含，则不包含的不读取，包含的读取
+								if(filter.filterRelation==FILTER_RELATION_NOT_LIKE_VALUE){
+									//说明包含
+									if(content.toLowerCase().indexOf(filterContent)!=-1){
+										isRead = READ;
+									}
+								}
+								//选择的是包含，则不包含的读取，包含的不读取
+								else{
+									if(content.toLowerCase().indexOf(filterContent)==-1){
+										isRead = READ;
+									}
+								}
+							}
+						}
+					}
 			}
+			}
+			catch(e){
+				console.error(e)
+			}
+		}
 		});
 	
 	return isRead;
